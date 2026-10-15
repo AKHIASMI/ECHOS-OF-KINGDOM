@@ -1,2 +1,14 @@
 fileFormatVersion: 2
 guid: ecaae302cdd85244ab1a59268c5ed504
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - cameraTransform: {instanceID: 0}
+  - respawnPoint: {instanceID: 0}
+  - footstepClip: {fileID: 8300000, guid: 689c33264c668744fb4261b66d9aa396, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

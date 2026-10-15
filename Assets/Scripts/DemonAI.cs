@@ -47,6 +47,7 @@ public class DemonAI : MonoBehaviour
     private float nextAttack;
     private float nextPatrol;
     private float nextFireball;
+    private float nextGrowl;
 
     // Values actually used in play (base values x level multipliers)
     private float curDetect, curLose, curDamage, curCooldown, curChase;
@@ -130,13 +131,37 @@ public class DemonAI : MonoBehaviour
         float dist = FlatDistance(transform.position, player.position);
 
         if (playerOut) chasing = false;
-        else if (!chasing && dist <= curDetect) chasing = true;
+        else if (!chasing && dist <= curDetect)
+        {
+            chasing = true;
+            PlayGrowl();
+        }
         else if (chasing && dist > curLose) chasing = false;
 
         if (chasing) Chase(dist, playerHealth);
         else Patrol();
 
         KeepOutOfSafeZones();
+    }
+
+    private void PlayGrowl()
+    {
+        if (Time.time < nextGrowl) return;
+
+        if (SoundPlayer.Instance == null)
+        {
+            Debug.LogWarning("DemonAI: no SoundManager (SoundPlayer) in this scene, so no growl.");
+            return;
+        }
+
+        if (SoundPlayer.Instance.demonGrowl == null)
+        {
+            Debug.LogWarning("DemonAI: the Demon Growl slot on SoundManager is empty.");
+            return;
+        }
+
+        SoundPlayer.Instance.Play(SoundPlayer.Instance.demonGrowl, 0.8f);
+        nextGrowl = Time.time + 8f;
     }
 
     private void Chase(float dist, PlayerHealth playerHealth)

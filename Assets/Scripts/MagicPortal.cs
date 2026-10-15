@@ -17,6 +17,9 @@ public class MagicPortal : MonoBehaviour
     {
         active = true;
         MaterialGlow.Apply(visual, new Color(0.4f, 0.8f, 1f), 3f);
+
+        if (SoundPlayer.Instance != null)
+            SoundPlayer.Instance.Play(SoundPlayer.Instance.portalActivate);
     }
 
     private void OnTriggerEnter(Collider other)

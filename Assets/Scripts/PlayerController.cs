@@ -20,10 +20,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float fallLimitY = -15f;
     [SerializeField] private float fallDamage = 20f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip footstepClip;
+    [SerializeField, Range(0f, 1f)] private float footstepVolume = 0.5f;
+
     private CharacterController controller;
     private Vector3 velocity;
     private float turnVelocity;
     private Vector3 fallbackRespawnPosition;
+    private AudioSource footstepSource;
 
     public bool CanMove { get; set; } = true;
 
@@ -37,11 +42,17 @@ public class PlayerController : MonoBehaviour
 
         if (cameraTransform == null)
             Debug.LogError("PlayerController: no camera found. Tag your camera as MainCamera.");
+
+        footstepSource = gameObject.AddComponent<AudioSource>();
+        footstepSource.clip = footstepClip;
+        footstepSource.loop = true;
+        footstepSource.playOnAwake = false;
+        footstepSource.volume = footstepVolume;
     }
 
     private void Update()
     {
-        if (!CanMove || Time.timeScale == 0f) return;
+        if (!CanMove || Time.timeScale == 0f) { SetFootsteps(false, false); return; }
 
         HandleMovement();
 
@@ -85,6 +96,23 @@ public class PlayerController : MonoBehaviour
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+
+        SetFootsteps(input.magnitude >= 0.1f && grounded, Input.GetKey(KeyCode.LeftShift));
+    }
+
+    private void SetFootsteps(bool moving, bool running)
+    {
+        if (footstepSource == null || footstepClip == null) return;
+
+        if (moving)
+        {
+            footstepSource.pitch = running ? 1.4f : 1f;
+            if (!footstepSource.isPlaying) footstepSource.Play();
+        }
+        else if (footstepSource.isPlaying)
+        {
+            footstepSource.Stop();
+        }
     }
 
     public void SetRespawnPoint(Transform point)
